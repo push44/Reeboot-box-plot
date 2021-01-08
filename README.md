@@ -191,6 +191,22 @@ Multi-multiclass log loss = <img src="https://render.githubusercontent.com/rende
 
 In this calculation, K is the number of dependent variables, N is the number of rows being evaluated, and C is the number of class values k can take on. As a note, if your probabilities don't sum to 1 for each class, we will normalize them for you. The goal is to minimize multi-multiclass log loss.
 
+## Final Model Description:
+
+After tring many different feature engineering such as entropy features, numeric feature binning, single text vectorization, etc. finally tfidf vectorization of multiple text feature columns as given in the original data set is used. Along with these text features normalized and standardized numeric features are also used.<br>
+
+Aftering trying for many different modeling improches simple Online Logistic Regression Classifier using sklearn's SGDClassifier which uses Stochastic Gradient Descent is used for final model approach. The reason of custom building online classifier is that Sklearn's Logistic Regression Classifier fits the model on the entire data set which makes is slower and harder to run on the large data set. Where as Stochastic Gradient Descent is easy to fit and faster on a large data sets.<br>
+
+Early stopping is an important feature while building classifier to avoid overfitting. Using some tolerance level for iterative improvement (here 0.001) we can early model iteration.<br>
+
+Similar to sklearn's logistic classifier parameter max_iter, max_epoch is also set to 1000 epoch iteration.<br>
+
+Finally, before providing data to the model, all features in the entire data is stacked together using scipy sparse hstack module which makes data stacked dataframe as sparse scipy matrix. This is done because online classifier makes faster passes on the scipy sparse matrix which makes the model even faster.<br>
+
+Instead of using pure Stochastic Gradient Descent, we use mini-batch gradient descent. On this ![link](ttps://www.kaggle.com/c/instacart-market-basket-analysis/discussion/37753) author has provided iter_minibatches function that takes in chunksize, X, y as function parameters to yield randomly selected x_chunk, y_chunk with the size of provided chunksize.<br>
+
+Last but not the least, we run such mini-batch-logistic-regression model as one-verse-rest on every class of every label. Hence, we run such model 104 times.
+
 ## Models:
 
 |Model description|Score|
@@ -202,3 +218,13 @@ In this calculation, K is the number of dependent variables, N is the number of 
 |Same as above with multi-text-columns|0.5582|
 |Logistic multi-text tfidf + original numeric features with scaling + feature drop|0.5381|
 |Same as previous model but 3 more feature drop|0.5314|
+
+## Things that did not worked out:
+<ul>
+  <li>We used condesed features, meaning all the text features are collapsed into a single feature</li>
+  <li>Used numeric feature binning</li>
+  <li>Used target encoded features</li>
+  <li>Used entropy based features</li>
+  <li>Fit mini-batch model on labels instead of classes of labels.</li>
+  
+</ul>
