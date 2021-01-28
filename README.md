@@ -1,7 +1,7 @@
 # Educational Resource Strategies: Multi label multi class prediction
 ![alt_text](https://www.erstrategies.org/assets/og_images/ers-logo-254d7736762585f10156e3b3aa37aa0cf560ffa1708f64ae6ea6fffad239d7ad.png)
 
-# Problem description:
+## A) Problem description:
 
 According to Driven Data, budgets for schools and school districts are huge, complex, and unwieldy. It's no easy task to digest where and how schools are using their resources. Education Resource Strategies is a non-profit that tackles just this task with the goal of letting districts be smarter, more strategic, and more effective in their spending. Our task is a multi-class-multi-label classification problem with the goal of attaching canonical labels to the freeform text in budget line items. These labels let ERS understand how schools are spending money and tailor their strategy recommendations to improve outcomes for students, teachers, and administrators.<br><br>
 
@@ -10,7 +10,7 @@ Once this process is complete, we can finally offer cross-district insight into 
 <br><br>
 This task (which we call financial coding) is very time and labor-intensive.
 
-## Data description:
+## B) Data description:
 
 Data source: ![Driven Data](https://www.drivendata.org/competitions/46/box-plots-for-education-reboot/)
 
@@ -178,20 +178,32 @@ Label list:
   </li>
 </ul>
 
-## Files:
+## C) Files:
 <ol>
   <li>Initial data preparation.ipynb: Create files train.csv, test.csv, labels.csv</li>
   <li>Create multi column text data set.ipynb: Preprocess text features to save train_multi_column_text.csv and test_multi_column_text.csv</li>
   <li>logistic base model.ipynb: Create online logistic one vs rest models for each category of labels</li>
 </ol>
 
-## Evaluation metric:
+## D) Evaluation metric:
 
 Multi-multiclass log loss = <img src="https://render.githubusercontent.com/render/math?math=\frac{1}{K} \sum^N_{n=0} \sum^C_{c=1} y_{k,c,n} log(\hat{y}_{k,c,n})">
 
 In this calculation, K is the number of dependent variables, N is the number of rows being evaluated, and C is the number of class values k can take on. As a note, if your probabilities don't sum to 1 for each class, we will normalize them for you. The goal is to minimize multi-multiclass log loss.
 
-## Final Model Description:
+## F) Final Model Description:
+
+### F.1) Missing values:
+Eventhough we might see we have lot of input data columns it is important to check any missing values.
+![img](missingvalues.png)
+
+From the above missing values heatmap it is clear that not all the feature columns contain enough information. In fact except features "Object Description" and "Total" other features possess too many missing values to replace. Hence, we are forced to drop many of the features such as facility_or_Department, Text_2, Text_3, Text_4, Text_1, SubFund_Description, Position_Extra.
+
+### F.2) Data Preparation:
+In the data prepartion step, we clean text features. In the text cleaning step we first decontract contracted words, for example, don't becomes do not, wouldn't becomes would not, etc. After this we remove all the special characters, punctuation marks, stopwords. After removing we may make some of the samples empty strings so we fill up empty string with the word "empty".
+
+### F.3) Final model:
+
 
 After tring many different feature engineering such as entropy features, numeric feature binning, single text vectorization, etc. finally tfidf vectorization of multiple text feature columns as given in the original data set is used. Along with these text features normalized and standardized numeric features are also used.<br>
 
